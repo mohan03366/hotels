@@ -1,0 +1,23 @@
+.rooms__title {
+  font-size: 50px;
+  font-family: Poppins Black;
+  color: #000;
+}
+
+.rooms__room {
+  width: 100%;
+  height: 150px;
+  /* background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), */
+  /* url(../../style/img/bedroom.jpg); */
+  background-position: center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.rooms__room h4 {
+  font-family: Poppins Regular;
+  color: #fff;
+}
