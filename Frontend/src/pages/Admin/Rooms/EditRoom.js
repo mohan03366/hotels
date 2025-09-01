@@ -87,7 +87,7 @@ function EditRoom(props) {
   return (
     <div>
       <Helmet>
-        <title>Edit Room - BSS Hotel</title>
+        <title>Edit Room - Royal Blue Star</title>
       </Helmet>
 
       <header className="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">

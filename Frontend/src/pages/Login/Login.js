@@ -80,7 +80,7 @@ function Login() {
   return (
     <div>
       <Helmet>
-        <title>Login - BSS Hotel</title>
+        <title>Login - Royal Blue Star</title>
       </Helmet>
       <div className="register d-flex align-items-center justify-content-center">
         <div className="row justify-content-center w-100">

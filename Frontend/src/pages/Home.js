@@ -83,7 +83,7 @@ function Home() {
   return (
     <div>
       <Helmet>
-        <title>Home - BSS Hotel</title>
+        <title>Royal Blue Star</title>
       </Helmet>
       <div ref={homeSection}>
         <Navbar

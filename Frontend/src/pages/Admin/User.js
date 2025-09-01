@@ -55,12 +55,12 @@ function Admin() {
   return (
     <div>
       <Helmet>
-        <title>Admin - BSS Hotel</title>
+        <title>Admin - Royal Blue Star</title>
       </Helmet>
 
       <header className="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
         <Link to="/admin" className="navbar-brand col-md-3 col-lg-2 me-0 px-3">
-          BSS Admin
+          Royal Blue Star Admin
         </Link>
         <button
           className="navbar-toggler position-absolute d-md-none collapsed"
