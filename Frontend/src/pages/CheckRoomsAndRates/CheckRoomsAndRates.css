@@ -3,3 +3,150 @@
   color: black;
   font-size: 50px;
 }
+
+/* Room Cards Styling */
+.card {
+  border: none;
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.card-img-container {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+}
+
+.rooms__room {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .rooms__room {
+  transform: scale(1.05);
+}
+
+.card-img-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 0;
+}
+
+.card-img-overlay .badge {
+  font-size: 0.8rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 20px;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-title {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.75rem;
+}
+
+.card-text {
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 15px;
+}
+
+/* Button Styling */
+.button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  color: white;
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+/* Loading Spinner */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Empty State */
+.text-muted i {
+  opacity: 0.5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .check_rooms_and_rate__title {
+    font-size: 2rem;
+  }
+  
+  .card-img-container {
+    height: 200px;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+}
+
+/* Alert Styling */
+.alert {
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Price Styling */
+.text-success {
+  color: #28a745 !important;
+  font-weight: 700;
+}
+
+/* Amenities Styling */
+.badge.bg-light {
+  background-color: #f8f9fa !important;
+  color: #495057 !important;
+  border: 1px solid #dee2e6;
+}

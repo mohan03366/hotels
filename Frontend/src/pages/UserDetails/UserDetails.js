@@ -25,81 +25,124 @@ function UserDetails() {
   const [zip, setZip] = useState();
   const [city, setCity] = useState();
   const [statee, setState] = useState();
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [nights, setNights] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const history = useHistory();
 
-  function handleSubmit(e) {
+  function clearFormFields() {
+    // Clear all form fields
+    setName("");
+    setEmail("");
+    setPhone("");
+    setCountry("");
+    setAddress("");
+    setAddress2("");
+    setZip("");
+    setCity("");
+    setState("");
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    if (skipPayment.current.checked) {
-      dispatch({
-        type: actionTypes.LOADING,
-        isLoading: true,
-      });
+    if (!selectedRoom) {
+      alert("Room data not loaded. Please go back and re-select room.");
+      return;
+    }
 
-      axios
-        .post("/api/booking/add_reservation", {
-          // userId: "null",
-          // checkInDate: state.booking.checkIn,
-          // checkOutDate: state.booking.checkOut,
-          // paymentId: "null",
-          // bookingInfo: [
-          //   {
-          //     pax: [
-          //       {
-          //         name: name,
-          //         adultStatus: "null",
-          //         gender: "null",
-          //         age: "null",
-          //       },
-          //     ],
-          //     roomType: "null",
-          //     roomId: state.roomId,
-          //     roomAmount: state.booking.room,
-          //   },
-          // ],
-          userEmail: email,
-          checkInDate: state.booking.checkIn,
-          checkOutDate: state.booking.checkOut,
-          paymentId: "null",
-          bookCode: "null",
-          paymentStatus: "not-paid",
-          isPast: false,
+    // Basic validation
+    if (!name || !email) {
+      setFormError("Name and Email are required");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setFormError("Please enter a valid email address");
+      return;
+    }
+    setFormError("");
 
-          name: name,
-          adultStatus: "null",
-          gender: "null",
-          age: 0,
-          roomType: "null",
-          roomID: state.booking.roomID,
-          roomAmount: state.booking.room,
-        })
-        .then((response) => {
-          dispatch({
-            type: actionTypes.LOADING,
-            isLoading: false,
-          });
-          alert(response.data.msg);
-          history.push("/");
-        })
-        .catch((err) => {
-          dispatch({
-            type: actionTypes.LOADING,
-            isLoading: false,
-          });
-          console.log(err.response);
-          alert("Something Went Wrong");
-        });
-    } else {
-      history.push("/payment");
+    // Build quote and redirect to payment (no skip payment)
+    try {
+      setSubmitting(true);
+      const quote = {
+        userEmail: email.trim().toLowerCase(),
+        name: name.trim(),
+        phone: phone ? phone.trim() : undefined,
+        address: {
+          street: address ? address.trim() : undefined,
+          street2: address2 ? address2.trim() : undefined,
+          city: city ? city.trim() : undefined,
+          state: statee ? statee.trim() : undefined,
+          zip: zip ? zip.trim() : undefined,
+          country: country ? country.trim() : undefined,
+        },
+        checkInDate: state.booking.checkIn,
+        checkOutDate: state.booking.checkOut,
+        bookingInfo: [
+          {
+            pax: [
+              {
+                name: name.trim(),
+                adultStatus: "adult",
+                gender: "other",
+                age: 0,
+              },
+            ],
+            roomType: selectedRoom.type,
+            roomId: selectedRoom._id,
+            roomAmount: selectedRoom.rentPerDay,
+          },
+        ],
+      };
+      // Compute total amount
+      const ci = new Date(state.booking.checkIn);
+      const co = new Date(state.booking.checkOut);
+      const diffMs = Math.abs(co - ci);
+      const nightsComputed = Math.max(
+        1,
+        Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+      );
+      quote.totalAmount = selectedRoom.rentPerDay * nightsComputed;
+      try {
+        localStorage.setItem("pendingQuote", JSON.stringify(quote));
+      } catch {}
+      history.push({ pathname: "/payment", state: { quote } });
+    } finally {
+      setSubmitting(false);
     }
   }
 
   useEffect(() => {
-    if (state.booking.checkIn === null) {
+    if (state.booking.checkIn === null || !state.roomId) {
       history.push("/");
+      return;
     }
-  });
+
+    // compute nights
+    const checkIn = new Date(state.booking.checkIn);
+    const checkOut = new Date(state.booking.checkOut);
+    const diffMs = Math.abs(checkOut - checkIn);
+    const nightsComputed = Math.max(
+      1,
+      Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+    );
+    setNights(nightsComputed);
+
+    // fetch selected room
+    axios
+      .get(`/api/rooms/${state.roomId}`)
+      .then((res) => {
+        if (res.data && res.data.success) {
+          setSelectedRoom(res.data.data);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {});
+  }, [state.booking.checkIn, state.booking.checkOut, state.roomId, history]);
   return (
     <div className="user_details__container">
       <div className="container mb-5 mt-5">
@@ -107,6 +150,11 @@ function UserDetails() {
           <div className="col-md-6">
             <h4 className="text-center">Please Fill Out the Form Below</h4>
             <form onSubmit={handleSubmit}>
+              {formError && (
+                <div className="alert alert-danger mt-2" role="alert">
+                  {formError}
+                </div>
+              )}
               <label htmlFor="full_name" className="mt-3">
                 Full Name
               </label>
@@ -223,19 +271,18 @@ function UserDetails() {
                 }}
               />
 
-              <input
-                type="checkbox"
-                name="skip_payment"
-                id="skip_payment"
-                className="mt-4"
-                ref={skipPayment}
-              />
-              <label htmlFor="skip_payment" className="mt-3 ml-1">
-                Skip Payment For Now
-              </label>
-
-              <button type="submit" className="button w-100 mt-3">
-                Submit
+              <button
+                type="submit"
+                className="button w-100 mt-3"
+                disabled={submitting}
+              >
+                {submitting
+                  ? "Submitting..."
+                  : `Confirm Reservation${
+                      selectedRoom
+                        ? ` - $${selectedRoom.rentPerDay * nights}`
+                        : ""
+                    }`}
               </button>
 
               <div className="d-flex align-items-center justify-content-center">

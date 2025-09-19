@@ -1,0 +1,32 @@
+.payment-method-card {
+  transition: all 0.3s ease;
+  border: 2px solid transparent !important;
+}
+
+.payment-method-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-color: #007bff !important;
+}
+
+.payment-method-card:active {
+  transform: translateY(-2px);
+}
+
+.payment-method-card .card-body {
+  padding: 1.5rem;
+}
+
+.payment-method-card .fa-2x {
+  font-size: 2.5rem;
+}
+
+.payment-method-card .card-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.payment-method-card .card-text {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}

@@ -71,6 +71,7 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log("Login attempt for email:", email);
 
     // 1) Check if email and password exist
     if (!email || !password) {
@@ -82,11 +83,29 @@ const login = async (req, res) => {
 
     // 2) Check if admin exists && password is correct
     const admin = await Admin.findOne({ email }).select("+password");
+    console.log("Admin found:", admin ? "Yes" : "No");
 
-    if (!admin || !(await admin.correctPassword(password, admin.password))) {
+    if (!admin) {
       return res.status(401).json({
         success: false,
-        message: "Incorrect email or password",
+        message: "No admin found with this email address",
+      });
+    }
+
+    console.log("Admin isActive:", admin.isActive);
+    console.log("Admin role:", admin.role);
+
+    // Check password
+    const isPasswordCorrect = await admin.correctPassword(
+      password,
+      admin.password
+    );
+    console.log("Password correct:", isPasswordCorrect);
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect password",
       });
     }
 
@@ -261,6 +280,33 @@ const changePassword = async (req, res) => {
   }
 };
 
+// Create default admin if none exists
+const createDefaultAdmin = async () => {
+  try {
+    const adminCount = await Admin.countDocuments();
+
+    if (adminCount === 0) {
+      const defaultAdmin = new Admin({
+        fullName: "Super Admin",
+        email: "admin@royalhotel.com",
+        password: "admin123",
+        role: "superadmin",
+        isActive: true,
+      });
+
+      await defaultAdmin.save();
+      console.log("Default admin created:");
+      console.log("Email: admin@royalhotel.com");
+      console.log("Password: admin123");
+    }
+  } catch (error) {
+    console.error("Error creating default admin:", error);
+  }
+};
+
+// Call this function when the server starts
+createDefaultAdmin();
+
 module.exports = {
   signup,
   login,
@@ -270,4 +316,5 @@ module.exports = {
   updateMe,
   deleteAdmin,
   changePassword,
+  createDefaultAdmin,
 };

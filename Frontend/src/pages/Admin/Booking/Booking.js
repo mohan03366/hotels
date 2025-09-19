@@ -11,7 +11,8 @@ import Helmet from "react-helmet";
 
 function Booking() {
   const [state, dispatch] = useStateValue();
-  const [bookings, setBookings] = useState();
+  const [bookings, setBookings] = useState([]);
+  const [message, setMessage] = useState("");
 
   const history = useHistory();
 
@@ -23,6 +24,9 @@ function Booking() {
       isAuth: false,
       accessToken: null,
     });
+    try {
+      localStorage.removeItem("adminAuth");
+    } catch (e) {}
   }
 
   function toggleSidebar() {
@@ -35,21 +39,30 @@ function Booking() {
     }
   }, [state.isAuth]);
 
+  const fetchBookings = () => {
+    axios
+      .get("/api/booking/list_all_reservations")
+      .then((res) => {
+        if (res.data && res.data.success) {
+          setBookings(res.data.reservations || []);
+        } else {
+          setBookings([]);
+          setMessage(res.data?.message || "Failed to load bookings");
+        }
+      })
+      .catch((err) => {
+        setMessage(
+          err.response?.data?.message ||
+            "Something went wrong. Please try again by refreshing the page."
+        );
+      });
+  };
+
   useEffect(() => {
     if (state.isAuth === true) {
-      axios
-        .get("/api/booking/list_all_reservations")
-        .then((data) => {
-          setBookings(data.data.reservations);
-        })
-        .catch((err) => {
-          alert(
-            "Something went wrong. Please try again by refreshing the page."
-          );
-          console.log(err);
-        });
+      fetchBookings();
     }
-  }, []);
+  }, [state.isAuth]);
   return (
     <div>
       <header className="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
@@ -124,24 +137,10 @@ function Booking() {
                                 axios
                                   .delete(
                                     "/api/booking/delete_reservation/" +
-                                      book._id,
-                                    {
-                                      headers: {
-                                        Authorization: `${state.accessToken}`,
-                                      },
-                                    }
+                                      book._id
                                   )
                                   .then((response) => {
-                                    axios
-                                      .get("/api/booking/list_all_reservations")
-                                      .then((data) => {
-                                        setBookings(data.data.reservations);
-                                      })
-                                      .catch((err) => {
-                                        alert(
-                                          "Something went wrong. Please try again by refreshing the page."
-                                        );
-                                      });
+                                    fetchBookings();
                                   })
                                   .catch((err) => {
                                     alert("something went wrong");

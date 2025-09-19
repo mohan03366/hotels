@@ -3,6 +3,8 @@ export const initialState = {
   isLoading: false,
   isAuth: false,
   accessToken: null,
+  admin: null,
+  userId: null,
 
   booking: {
     checkIn: null,
@@ -20,6 +22,7 @@ export const actionTypes = {
   AUTH: "AUTH",
   BOOKING: "BOOKING",
   CHECK_RATES: "CHECK_RATES",
+  SET_USER_ID: "SET_USER_ID",
 };
 
 const reducer = (state, action) => {
@@ -42,6 +45,7 @@ const reducer = (state, action) => {
         ...state,
         isAuth: action.isAuth,
         accessToken: action.accessToken,
+        admin: action.admin || null,
       };
       break;
     case actionTypes.BOOKING:
@@ -54,6 +58,12 @@ const reducer = (state, action) => {
       return {
         ...state,
         roomId: action.roomId,
+      };
+      break;
+    case actionTypes.SET_USER_ID:
+      return {
+        ...state,
+        userId: action.userId,
       };
       break;
     default:

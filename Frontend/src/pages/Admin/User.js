@@ -24,6 +24,9 @@ function Admin() {
       isAuth: false,
       accessToken: null,
     });
+    try {
+      localStorage.removeItem("adminAuth");
+    } catch (e) {}
   }
 
   function toggleSidebar() {
@@ -39,11 +42,13 @@ function Admin() {
   useEffect(() => {
     if (state.isAuth === true) {
       axios
-        .get("/api/users/list_all", {
-          headers: { Authorization: `${state.accessToken}` },
-        })
-        .then((data) => {
-          setUsers(data.data);
+        .get("/api/users")
+        .then((response) => {
+          if (response.data && response.data.success) {
+            setUsers(response.data.data || []);
+          } else {
+            setUsers([]);
+          }
         })
         .catch((err) => {
           alert(
@@ -100,9 +105,9 @@ function Admin() {
                   <tr>
                     <th scope="col">Full Name</th>
                     <th scope="col">Email</th>
-                    <th scope="col">Phone Number</th>
-                    <th scope="col">Gender</th>
-                    <th scope="col">Nationality</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">City</th>
+                    <th scope="col">Country</th>
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
@@ -111,31 +116,26 @@ function Admin() {
                     ? null
                     : users.map((user) => (
                         <tr key={user._id}>
-                          <td>{user.full_name}</td>
-                          <td>{user.email}</td>
-                          <td>{user.mobile_number}</td>
-                          <td>{user.gender}</td>
-                          <td>{user.nationality}</td>
+                          <td>{user.name || "-"}</td>
+                          <td>{user.email || "-"}</td>
+                          <td>{user.phone || "-"}</td>
+                          <td>{user.address?.city || "-"}</td>
+                          <td>{user.address?.country || "-"}</td>
                           <td>
                             <button
                               className="btn btn-sm btn-danger"
                               onClick={() => {
                                 axios
-                                  .delete("/api/users/delete/" + user._id, {
-                                    headers: {
-                                      Authorization: `${state.accessToken}`,
-                                    },
-                                  })
+                                  .delete("/api/users/" + user._id)
                                   .then((response) => {
-                                    if (response.data.msg === "success") {
+                                    if (
+                                      response.data &&
+                                      response.data.success
+                                    ) {
                                       axios
-                                        .get("/api/users/list_all", {
-                                          headers: {
-                                            Authorization: `${state.accessToken}`,
-                                          },
-                                        })
-                                        .then((data) => {
-                                          setUsers(data.data);
+                                        .get("/api/users")
+                                        .then((res2) => {
+                                          setUsers(res2.data?.data || []);
                                         })
                                         .catch((err) => {
                                           alert(

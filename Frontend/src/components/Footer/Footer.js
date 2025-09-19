@@ -8,7 +8,7 @@ function Footer() {
       <div className="footer-content container">
         <h3 className="footer-title">Hotel Royal Blue Star</h3>
         <p className="footer-text">
-          Near SKMCH Overbridge, In front of Petrol Pump, Muzaffarpur - 842001
+          Near Bariya Golambar Muzaffarpur, Bihar - 842001
         </p>
 
         <p className="footer-text">
@@ -37,9 +37,9 @@ function Footer() {
         </div>
 
         <p className="footer-credit">
-          Developed by <strong>Scalably Vision Pvt Ltd</strong> <br />
-          &copy; {new Date().getFullYear()} All rights reserved by Scalably
-          Vision
+          Developed by <strong>Promotion India</strong> <br />
+          &copy; {new Date().getFullYear()} All rights reserved by Promotion
+          India
         </p>
       </div>
     </div>

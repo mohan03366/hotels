@@ -1,15 +1,37 @@
 const User = require("../models/UserModel");
 
-// Create a new user
+// Create a new user or update existing user
 const createUser = async (req, res) => {
   try {
-    const user = new User(req.body);
-    const savedUser = await user.save();
-    res.status(201).json({
-      success: true,
-      data: savedUser,
-      message: "User created successfully",
-    });
+    const { email } = req.body;
+
+    // Check if user with this email already exists
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+
+    if (existingUser) {
+      // Update existing user with new information
+      const updatedUser = await User.findByIdAndUpdate(
+        existingUser._id,
+        req.body,
+        { new: true, runValidators: true }
+      );
+
+      return res.status(200).json({
+        success: true,
+        data: updatedUser,
+        message: "User updated successfully",
+      });
+    } else {
+      // Create new user
+      const user = new User(req.body);
+      console.log("Booking...... userss", user);
+      const savedUser = await user.save();
+      res.status(201).json({
+        success: true,
+        data: savedUser,
+        message: "User created successfully",
+      });
+    }
   } catch (error) {
     if (error.code === 11000) {
       return res.status(400).json({
@@ -28,6 +50,7 @@ const createUser = async (req, res) => {
 const getUsers = async (req, res) => {
   try {
     const users = await User.find().sort({ createdAt: -1 });
+    console.log(users);
     res.status(200).json({
       success: true,
       data: users,

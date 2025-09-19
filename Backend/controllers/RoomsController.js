@@ -3,7 +3,46 @@ const Room = require("../models/Rooms");
 // Create a new room
 const createRoom = async (req, res) => {
   try {
-    const room = new Room(req.body);
+    // Extract room data from request body
+    const { name, rentPerDay, type, maxCount, description, amenities } =
+      req.body;
+
+    // Validate required fields
+    if (!name || !rentPerDay || !type || !maxCount || !description) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Please provide all required fields: name, rentPerDay, type, maxCount, description",
+      });
+    }
+
+    // Parse amenities if provided as string
+    let amenitiesArray = [];
+    if (amenities) {
+      if (typeof amenities === "string") {
+        amenitiesArray = amenities
+          .split(",")
+          .map((item) => item.trim())
+          .filter((item) => item);
+      } else if (Array.isArray(amenities)) {
+        amenitiesArray = amenities;
+      }
+    }
+
+    // Create room data object
+    const roomData = {
+      name: name.trim(),
+      rentPerDay: parseFloat(rentPerDay),
+      type: type.trim(),
+      maxCount: parseInt(maxCount),
+      description: description.trim(),
+      amenities: amenitiesArray,
+      images: [], // Will be populated if images are uploaded
+      isAvailable: true,
+    };
+
+    // Create new room
+    const room = new Room(roomData);
     const savedRoom = await room.save();
 
     res.status(201).json({
@@ -12,6 +51,7 @@ const createRoom = async (req, res) => {
       message: "Room created successfully",
     });
   } catch (error) {
+    console.error("Error creating room:", error);
     res.status(400).json({
       success: false,
       message: error.message,
@@ -127,6 +167,46 @@ const getAvailableRooms = async (req, res) => {
   }
 };
 
+// Update room images
+const updateRoomImages = async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const { imageUrls } = req.body;
+
+    if (!imageUrls || !Array.isArray(imageUrls)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide an array of image URLs",
+      });
+    }
+
+    const room = await Room.findByIdAndUpdate(
+      roomId,
+      { images: imageUrls },
+      { new: true, runValidators: true }
+    );
+
+    if (!room) {
+      return res.status(404).json({
+        success: false,
+        message: "Room not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: room,
+      message: "Room images updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating room images:", error);
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createRoom,
   getRooms,
@@ -134,4 +214,5 @@ module.exports = {
   updateRoom,
   deleteRoom,
   getAvailableRooms,
+  updateRoomImages,
 };

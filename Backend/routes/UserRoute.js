@@ -9,26 +9,29 @@ const {
   deleteUser,
   searchUsers,
 } = require("../controllers/UserController");
+const protect = require("../Middleware/Authentication");
 
-// Create a new user
-router.post("/users", createUser);
+// Create a new user (public route for booking process)
+router.post("/add_reservation", createUser);
 
-// Get all users
-router.get("/users", getUsers);
+// Get user by email (public route for booking process)
+router.get("/email/:email", getUserByEmail);
 
-// Get user by ID
-router.get("/users/:id", getUserById);
+// All other user routes require admin authentication
 
-// Get user by email
-router.get("/users/email/:email", getUserByEmail);
+// Get all users (admin only)
+router.get("/", protect, getUsers);
 
-// Update user
-router.put("/users/:id", updateUser);
+// Get user by ID (admin only)
+router.get("/:id", protect, getUserById);
 
-// Delete user
-router.delete("/users/:id", deleteUser);
+// Update user (admin only)
+router.put("/:id", protect, updateUser);
 
-// Search users
-router.get("/search/users", searchUsers);
+// Delete user (admin only)
+router.delete("/:id", protect, deleteUser);
+
+// Search users (admin only)
+router.get("/search", protect, searchUsers);
 
 module.exports = router;

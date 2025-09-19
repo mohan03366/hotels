@@ -6,9 +6,11 @@ require("dotenv").config();
 
 // Import routes
 const userRoutes = require("./routes/UserRoute");
-//const bookingRoutes = require('./routes/bookingRoutes');
-//const roomRoutes = require('./routes/roomRoutes');
+const bookingRoutes = require("./routes/BookingRoute");
+const roomRoutes = require("./routes/RoomsRoute");
 const AdminRoute = require("./routes/AdminRoute");
+const uploadRoute = require("./routes/UploadRoute");
+const paymentRoutes = require("./routes/PaymnetRoute");
 
 // Import database connection
 const connectDB = require("./config/db");
@@ -28,10 +30,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 // API Routes
-//app.use("/api/users", userRoutes);
-//app.use("/api/bookings", bookingRoutes);
-//app.use("/api/rooms", roomRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/booking", bookingRoutes);
+app.use("/api/rooms", roomRoutes);
 app.use("/api/admin", AdminRoute);
+app.use("/api/upload", uploadRoute);
+app.use("/api/payment", paymentRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
@@ -60,7 +64,7 @@ app.use((error, req, res, next) => {
 });
 
 // Server port
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 
 // Start server
 app.listen(PORT, () => {

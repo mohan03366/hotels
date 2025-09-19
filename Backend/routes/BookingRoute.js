@@ -9,26 +9,27 @@ const {
   getReservationsByEmail,
   updatePaymentStatus,
 } = require("../controllers/BookingController");
+const protect = require("../Middleware/Authentication");
 
-// Get all reservations
-router.get("/list_all_reservations", listAllReservations);
+// Get all reservations (admin only)
+router.get("/list_all_reservations", protect, listAllReservations);
 
-// Get reservation by ID
-router.get("/:id", getReservationById);
+// Get reservation by ID (admin only)
+router.get("/:id", protect, getReservationById);
 
-// Create new reservation
+// Create new reservation (public)
 router.post("/add_reservation", createReservation);
 
-// Update reservation
-router.put("/:id", updateReservation);
+// Update reservation (admin only)
+router.put("/:id", protect, updateReservation);
 
-// Delete reservation
-router.delete("/delete_reservation/:id", deleteReservation);
+// Delete reservation (admin only)
+router.delete("/delete_reservation/:id", protect, deleteReservation);
 
-// Get reservations by email
-router.get("/user/:email", getReservationsByEmail);
+// Get reservations by email (admin only)
+router.get("/user/:email", protect, getReservationsByEmail);
 
-// Update payment status
-router.patch("/payment/:id", updatePaymentStatus);
+// Update payment status (admin only)
+router.patch("/payment/:id", protect, updatePaymentStatus);
 
 module.exports = router;
